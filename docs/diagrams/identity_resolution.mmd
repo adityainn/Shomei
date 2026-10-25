@@ -1,0 +1,96 @@
+%% Identity Resolution and Evidence Correlation Diagram
+%% Shows how a request email maps to identifiers and then to evidence
+
+flowchart TD
+    subgraph Input["Case Input"]
+        Email["Request Email<br/>(e.g., old-email@example.com)"]
+    end
+
+    subgraph IdentityResolution["Identity Resolution"]
+        CurrentLookup["Lookup in<br/>user_identities.csv"]
+        HistoricalLookup["Search in<br/>user_audit_log.csv<br/>(old_value match)"]
+        Found{{"Found user_id?"}}
+        BuildProfile["Build Full Profile"]
+
+        Email --> CurrentLookup
+        CurrentLookup --> Found
+        Found -->|"No"| HistoricalLookup
+        HistoricalLookup --> Found
+        Found -->|"Yes"| BuildProfile
+    end
+
+    subgraph IdentifierSet["Complete Identifier Set"]
+        UserID["user_id<br/>(e.g., user_42)"]
+        CurrentEmail["Current email"]
+        CurrentPhone["Current phone"]
+        CurrentHash["Current email_hash"]
+        OldEmails["Historical emails<br/>(from audit log)"]
+        OldPhones["Historical phones"]
+        OldHashes["Historical hashes"]
+
+        BuildProfile --> UserID
+        BuildProfile --> CurrentEmail
+        BuildProfile --> CurrentPhone
+        BuildProfile --> CurrentHash
+        BuildProfile --> OldEmails
+        BuildProfile --> OldPhones
+        BuildProfile --> OldHashes
+    end
+
+    subgraph EvidenceCorrelation["Evidence Correlation"]
+        direction TB
+        SearchSQL["Query SQL Snapshots<br/>(24 files, 8 table types)<br/>WHERE email=? OR<br/>customer_reference=?"]
+        SearchJSON["Search JSON Records<br/>(28 files)<br/>matching identifiers"]
+        SearchLogs["Scan Log Files<br/>(26 files)<br/>grep for identifiers"]
+        SearchMultimodal["AI: Analyze Images/PDFs<br/>(15 files)<br/>for visible identifiers"]
+        TemporalFilter["Filter by captured_at ≤ audit_at"]
+    end
+
+    UserID --> SearchSQL
+    CurrentEmail --> SearchSQL
+    CurrentEmail --> SearchJSON
+    CurrentEmail --> SearchLogs
+    CurrentEmail --> SearchMultimodal
+    OldEmails --> SearchSQL
+    OldEmails --> SearchJSON
+    OldEmails --> SearchLogs
+    CurrentPhone --> SearchLogs
+    CurrentHash --> SearchSQL
+    UserID --> SearchJSON
+    UserID --> SearchLogs
+
+    SearchSQL --> TemporalFilter
+    SearchJSON --> TemporalFilter
+    SearchLogs --> TemporalFilter
+    SearchMultimodal --> TemporalFilter
+
+    subgraph DiscoveredResources["Discovered Resources"]
+        Accounts["account_* records"]
+        Searches["search_* entries"]
+        Analytics["analytics_* profiles"]
+        Support["support_* records"]
+        Exports["export_* files"]
+        DataFlows["data_flow_* connectors"]
+        Backups["backup_* archives"]
+        AuditRecords["audit_record_* logs"]
+        Tombstones["tombstone_* records"]
+    end
+
+    TemporalFilter --> Accounts
+    TemporalFilter --> Searches
+    TemporalFilter --> Analytics
+    TemporalFilter --> Support
+    TemporalFilter --> Exports
+    TemporalFilter --> DataFlows
+    TemporalFilter --> Backups
+    TemporalFilter --> AuditRecords
+    TemporalFilter --> Tombstones
+
+    classDef deterministic fill:#e8f5e9,stroke:#2e7d32
+    classDef ai fill:#fce4ec,stroke:#c62828
+    classDef data fill:#e3f2fd,stroke:#1565c0
+
+    class CurrentLookup,HistoricalLookup,BuildProfile,TemporalFilter deterministic
+    class SearchSQL,SearchJSON,SearchLogs deterministic
+    class SearchMultimodal ai
+    class UserID,CurrentEmail,CurrentPhone,CurrentHash,OldEmails,OldPhones,OldHashes,Accounts,Searches,Analytics,Support,Exports,DataFlows,Backups,AuditRecords,Tombstones data

@@ -1,0 +1,74 @@
+%% Execution Environment and Submission Artifacts
+%% Shows runtime, file layout, and submission packaging
+
+graph TD
+    subgraph Runtime["Execution Environment"]
+        Python["Python 3.x"]
+        SQLite["sqlite3 (stdlib)"]
+        GenAI["google-genai SDK"]
+        ENV[".env file<br/>(GEMINI_API_KEY)"]
+
+        Python --> SQLite
+        Python --> GenAI
+        ENV -.->|"read at startup"| GenAI
+    end
+
+    subgraph RepoLayout["Repository Layout"]
+        Root["repo root/"]
+        AGENTS["AGENTS.md"]
+        README["README.md"]
+        LogTxt["log.txt"]
+        OutputCSV["output.csv ← SUBMISSION"]
+        CodeDir["code/"]
+        MainPy["main.py"]
+        Modules["*.py modules"]
+        EvalDir["evaluation/"]
+        EvalReport["evaluation_report.md"]
+        UsageReport["usage_report.md"]
+        DatasetDir["dataset/ (READ ONLY)"]
+        DocsDir["docs/ (documentation)"]
+
+        Root --> AGENTS
+        Root --> README
+        Root --> LogTxt
+        Root --> OutputCSV
+        Root --> CodeDir
+        Root --> DatasetDir
+        Root --> DocsDir
+        CodeDir --> MainPy
+        CodeDir --> Modules
+        CodeDir --> EvalDir
+        EvalDir --> EvalReport
+        EvalDir --> UsageReport
+    end
+
+    subgraph Submission["Submission Artifacts"]
+        CodeZip["code.zip<br/>(code/ + README.md)"]
+        SubmitOutput["output.csv<br/>(518 rows)"]
+        ChatTranscript["log.txt<br/>(chat transcript)"]
+        AgentTrace["agent-trace.zip<br/>(session transcripts)"]
+        Interview["AI Interview<br/>(live explanation)"]
+
+        CodeDir -->|"zip"| CodeZip
+        README -->|"include"| CodeZip
+        OutputCSV --> SubmitOutput
+        LogTxt --> ChatTranscript
+    end
+
+    subgraph Excluded["NOT in code.zip"]
+        NoDataset["❌ dataset/"]
+        NoVenv["❌ .venv/"]
+        NoSecrets["❌ .env, API keys"]
+        NoCache["❌ __pycache__/"]
+        NoNested["❌ nested .zip files"]
+    end
+
+    classDef existing fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    classDef proposed fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef submission fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef excluded fill:#ffebee,stroke:#c62828,stroke-width:2px
+
+    class AGENTS,README,DatasetDir existing
+    class MainPy,Modules,EvalDir,EvalReport,UsageReport,LogTxt,OutputCSV,DocsDir proposed
+    class CodeZip,SubmitOutput,ChatTranscript,AgentTrace,Interview submission
+    class NoDataset,NoVenv,NoSecrets,NoCache,NoNested excluded

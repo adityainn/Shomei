@@ -1,0 +1,51 @@
+%% System Context Diagram — Shomei Deletion Audit Agent
+%% Shows the system boundary and external entities
+
+graph TB
+    subgraph External["External Inputs"]
+        DR["deletion_requests.csv<br/>(518 cases)"]
+        UI["user_identities.csv<br/>(850 users)"]
+        UAL["user_audit_log.csv<br/>(306 entries)"]
+        SA["system_activity.csv<br/>(4,011 events)"]
+        DRules["deletion_rules.csv<br/>(15 rules)"]
+        EF["evidence_files.csv<br/>(94 files)"]
+        Evidence["dataset/evidence/<br/>(SQL, JSON, logs, PDFs, PNGs, text)"]
+    end
+
+    subgraph Shomei["Shomei Pipeline"]
+        direction TB
+        Pipeline["AI-Powered<br/>Deletion Audit Agent"]
+    end
+
+    subgraph Outputs["Outputs"]
+        Output["output.csv<br/>(518 rows)"]
+        EvalReport["evaluation_report.md"]
+        UsageReport["usage_report.md"]
+        Log["log.txt"]
+    end
+
+    subgraph Services["External Services"]
+        LLM["Gemini Flash API<br/>(intent classification,<br/>multimodal analysis)"]
+    end
+
+    DR --> Pipeline
+    UI --> Pipeline
+    UAL --> Pipeline
+    SA --> Pipeline
+    DRules --> Pipeline
+    EF --> Pipeline
+    Evidence --> Pipeline
+    Pipeline <--> LLM
+    Pipeline --> Output
+    Pipeline --> EvalReport
+    Pipeline --> UsageReport
+    Pipeline --> Log
+
+    classDef existing fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    classDef proposed fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef external fill:#fff3e0,stroke:#e65100,stroke-width:2px
+
+    class DR,UI,UAL,SA,DRules,EF,Evidence existing
+    class Pipeline proposed
+    class Output,EvalReport,UsageReport,Log proposed
+    class LLM external

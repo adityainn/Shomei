@@ -1,0 +1,94 @@
+%% Decision, Remediation, and Verification Flow
+%% Shows how findings lead to status decisions and step generation
+
+flowchart TD
+    Start["Resources Discovered<br/>+ States Reconstructed"]
+
+    subgraph PolicyCheck["Policy Application (per resource)"]
+        Categorize["Map resource → data_category"]
+        LookupRule["Lookup deletion_rules.csv"]
+        CompareState["Compare actual vs required state"]
+        IsViolation{{"Violation?"}}
+
+        Categorize --> LookupRule --> CompareState --> IsViolation
+    end
+
+    Start --> Categorize
+
+    subgraph ViolationTypes["Violation Classification"]
+        RemainingRecord["REPORT_REMAINING_RECORD<br/>(record present, should be deleted)"]
+        ExposedPII["REPORT_EXPOSED_PII<br/>(PII present, should be redacted/anonymized)"]
+        ActiveFlow["REPORT_ACTIVE_DATA_FLOW<br/>(connector enabled, should be disabled)"]
+        RestoreRisk["REPORT_RESTORE_RISK<br/>(restore_allowed=1, should be blocked)"]
+    end
+
+    IsViolation -->|"Record exists,<br/>DELETE required"| RemainingRecord
+    IsViolation -->|"PII exposed,<br/>REDACT/ANONYMIZE required"| ExposedPII
+    IsViolation -->|"Connector enabled"| ActiveFlow
+    IsViolation -->|"Restore allowed"| RestoreRisk
+
+    subgraph StatusDecision["Status Decision"]
+        AnyViolations{{"Any violations?"}}
+        MarkComplete["Status: COMPLETE"]
+        MarkIncomplete["Status: INCOMPLETE"]
+    end
+
+    IsViolation -->|"No violation"| AnyViolations
+    RemainingRecord --> AnyViolations
+    ExposedPII --> AnyViolations
+    ActiveFlow --> AnyViolations
+    RestoreRisk --> AnyViolations
+    AnyViolations -->|"None"| MarkComplete
+    AnyViolations -->|"≥1"| MarkIncomplete
+
+    subgraph CompleteSteps["COMPLETE: Verification Only"]
+        VerifyAbsent["VERIFY_RECORD_ABSENT<br/>(deleted resources)"]
+        VerifyPresent["VERIFY_RECORD_PRESENT<br/>(retained audit records)"]
+        VerifyRedacted["VERIFY_RECORD_REDACTED<br/>(redacted support/tombstone)"]
+        VerifyAnonymized["VERIFY_RECORD_ANONYMIZED<br/>(anonymized analytics)"]
+        VerifyDisabled["VERIFY_DATA_FLOW_DISABLED<br/>(disabled connectors)"]
+        VerifyBlocked["VERIFY_RESTORE_BLOCKED<br/>(blocked backups)"]
+    end
+
+    MarkComplete --> VerifyAbsent
+    MarkComplete --> VerifyPresent
+    MarkComplete --> VerifyRedacted
+    MarkComplete --> VerifyAnonymized
+    MarkComplete --> VerifyDisabled
+    MarkComplete --> VerifyBlocked
+
+    subgraph IncompleteSteps["INCOMPLETE: Finding → Remediation → Verification"]
+        direction TB
+        Findings["FINDINGS<br/>(cite evidence_id)"]
+        RemDisableFlow["DISABLE_DATA_FLOW"]
+        RemBlockRestore["BLOCK_RESTORE"]
+        RemDelete["DELETE_RECORD"]
+        RemRedact["REDACT_RECORD"]
+        RemAnonymize["ANONYMIZE_RECORD"]
+        IncVerify["VERIFICATION steps<br/>(evidence_id = empty)"]
+
+        Findings --> RemDisableFlow
+        RemDisableFlow --> RemBlockRestore
+        RemBlockRestore --> RemDelete
+        RemDelete --> RemRedact
+        RemRedact --> RemAnonymize
+        RemAnonymize --> IncVerify
+    end
+
+    MarkIncomplete --> Findings
+
+    FinalOrder["Number steps 1..N<br/>Sort by phase → operation → system_id → resource_id"]
+
+    VerifyAbsent --> FinalOrder
+    VerifyBlocked --> FinalOrder
+    IncVerify --> FinalOrder
+
+    classDef deterministic fill:#e8f5e9,stroke:#2e7d32
+    classDef finding fill:#fff3e0,stroke:#e65100
+    classDef remediation fill:#e3f2fd,stroke:#1565c0
+    classDef verification fill:#f3e5f5,stroke:#7b1fa2
+
+    class Categorize,LookupRule,CompareState,FinalOrder deterministic
+    class RemainingRecord,ExposedPII,ActiveFlow,RestoreRisk,Findings finding
+    class RemDisableFlow,RemBlockRestore,RemDelete,RemRedact,RemAnonymize remediation
+    class VerifyAbsent,VerifyPresent,VerifyRedacted,VerifyAnonymized,VerifyDisabled,VerifyBlocked,IncVerify verification

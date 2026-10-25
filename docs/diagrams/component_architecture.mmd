@@ -1,0 +1,92 @@
+%% Component Architecture Diagram — Shomei
+%% Shows all modules and their dependencies
+%% Green = existing (dataset), Blue = proposed, Pink = AI-assisted
+
+graph TD
+    subgraph Dataset["Dataset (EXISTING)"]
+        direction LR
+        CSV["CSV Files<br/>(6 files)"]
+        SQLFiles["SQL Evidence<br/>(24 files)"]
+        JSONFiles["JSON Evidence<br/>(28 files)"]
+        LogFiles["Log Evidence<br/>(26 files)"]
+        BinaryFiles["Images + PDFs<br/>(15 files)"]
+        TextFiles["Text Evidence<br/>(1 file)"]
+    end
+
+    subgraph Core["Core Pipeline (PROPOSED)"]
+        Main["main.py<br/>Orchestrator"]
+        Models["models.py<br/>Data Classes"]
+        DataLoader["data_loader.py<br/>File Parsing"]
+        Identity["identity.py<br/>Identity Resolution"]
+        EvidenceIdx["evidence.py<br/>Evidence Index"]
+        SQLEngine["sql_engine.py<br/>SQLite Queries"]
+        Discovery["discovery.py<br/>Resource Discovery"]
+        Policy["policy.py<br/>Rule Application"]
+        Decision["decision.py<br/>Violation Detection"]
+        Steps["steps.py<br/>Step Generation"]
+        Output["output.py<br/>CSV Serialization"]
+    end
+
+    subgraph AI["AI Components (PROPOSED)"]
+        LLMClient["llm.py<br/>Gemini Flash Client"]
+        Classifier["classifier.py<br/>Intent Classifier"]
+        Multimodal["multimodal.py<br/>Image/PDF Analyzer"]
+        UsageTracker["usage.py<br/>Token Tracking"]
+    end
+
+    subgraph Eval["Evaluation (PROPOSED)"]
+        EvalMain["evaluation/main.py<br/>Scoring"]
+        EvalReport["evaluation_report.md"]
+        UsageReport["usage_report.md"]
+    end
+
+    %% Data flow
+    CSV --> DataLoader
+    SQLFiles --> DataLoader
+    JSONFiles --> DataLoader
+    LogFiles --> DataLoader
+    TextFiles --> DataLoader
+    BinaryFiles --> Multimodal
+
+    DataLoader --> Models
+    DataLoader --> Identity
+    DataLoader --> EvidenceIdx
+    DataLoader --> SQLEngine
+
+    Main --> DataLoader
+    Main --> Identity
+    Main --> Classifier
+    Main --> Discovery
+    Main --> Decision
+    Main --> Steps
+    Main --> Output
+
+    Identity --> Models
+    EvidenceIdx --> Models
+    SQLEngine --> EvidenceIdx
+
+    Discovery --> EvidenceIdx
+    Discovery --> SQLEngine
+    Discovery --> Identity
+
+    Policy --> Models
+    Decision --> Discovery
+    Decision --> Policy
+    Steps --> Decision
+    Steps --> Models
+
+    Classifier --> LLMClient
+    Multimodal --> LLMClient
+    LLMClient --> UsageTracker
+
+    Output --> Models
+    EvalMain --> Output
+
+    classDef existing fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    classDef proposed fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef ai fill:#fce4ec,stroke:#c62828,stroke-width:2px
+
+    class CSV,SQLFiles,JSONFiles,LogFiles,BinaryFiles,TextFiles existing
+    class Main,Models,DataLoader,Identity,EvidenceIdx,SQLEngine,Discovery,Policy,Decision,Steps,Output proposed
+    class LLMClient,Classifier,Multimodal,UsageTracker ai
+    class EvalMain,EvalReport,UsageReport proposed

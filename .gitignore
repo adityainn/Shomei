@@ -1,0 +1,81 @@
+# ==============================================================================
+# Shomei Git Ignore Configuration
+# Protects confidential challenge datasets, submission artifacts, and secrets.
+# ==============================================================================
+
+# --- Confidential Challenge Datasets & Raw Evidence ---
+dataset/
+*.sql
+*.pdf
+*.png
+*.log
+
+# --- Competition Deliverables & Agent Traces ---
+output.csv
+code.zip
+log.txt
+agent-trace/
+agent-trace.zip
+agent_trace_instructions.md
+problem_statement.md
+AGENTS.md
+CLAUDE.md
+
+# --- Environment & Sensitive Credentials ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+*.credentials
+
+# --- Python Bytecode & Build Artifacts ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Virtual Environments ---
+.venv/
+venv/
+ENV/
+env/
+venv.bak/
+
+# --- Testing & Coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# --- OS & IDE Metadata ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

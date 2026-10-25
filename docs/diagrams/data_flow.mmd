@@ -1,0 +1,70 @@
+%% End-to-End Data Flow Diagram — Shomei Pipeline
+%% Shows the flow of data through all processing stages
+
+flowchart TD
+    Start(["Start: 518 Cases"]) --> Init
+
+    subgraph Init["Stage 1: Initialization (one-time)"]
+        LoadCSV["Load CSVs<br/>(deterministic)"]
+        BuildIdentity["Build Identity Lookup<br/>(email → user_id)"]
+        ParseEvidence["Parse Evidence Files<br/>(SQL→SQLite, JSON, logs)"]
+        BuildIndex["Build Inverted Index<br/>(identifier → file_ids)"]
+        ExtractMultimodal["Extract Image/PDF Data<br/>(AI-assisted, 15 files)"]
+
+        LoadCSV --> BuildIdentity
+        LoadCSV --> ParseEvidence
+        ParseEvidence --> BuildIndex
+        ParseEvidence --> ExtractMultimodal
+    end
+
+    Init --> CaseLoop
+
+    subgraph CaseLoop["Stage 2: Per-Case Processing (×518)"]
+        direction TB
+        ClassifyIntent["Classify Intent<br/>(AI: deletion vs non-deletion)"]
+        CheckNA{{"NOT_APPLICABLE?"}}
+        ResolveID["Resolve Identity<br/>(deterministic: email → user_id<br/>+ historical identifiers)"]
+        GatherEvidence["Gather Evidence<br/>(deterministic: index search<br/>+ SQL queries + temporal filter)"]
+        ReconstructState["Reconstruct State at audit_at<br/>(deterministic + AI for ambiguous)"]
+        ApplyPolicy["Apply Deletion Rules<br/>(deterministic: 15 rules)"]
+        DetectViolations["Detect Violations<br/>(deterministic: actual vs required)"]
+        CheckComplete{{"Violations == 0?"}}
+        GenComplete["Generate VERIFICATION steps<br/>(with evidence citations)"]
+        GenIncomplete["Generate FINDING +<br/>REMEDIATION + VERIFICATION steps"]
+        OrderSteps["Order Steps<br/>(deterministic sorting)"]
+
+        ClassifyIntent --> CheckNA
+        CheckNA -->|"Yes"| EmitNA["Emit NOT_APPLICABLE, []"]
+        CheckNA -->|"No"| ResolveID
+        ResolveID --> GatherEvidence
+        GatherEvidence --> ReconstructState
+        ReconstructState --> ApplyPolicy
+        ApplyPolicy --> DetectViolations
+        DetectViolations --> CheckComplete
+        CheckComplete -->|"Yes (COMPLETE)"| GenComplete
+        CheckComplete -->|"No (INCOMPLETE)"| GenIncomplete
+        GenComplete --> OrderSteps
+        GenIncomplete --> OrderSteps
+    end
+
+    CaseLoop --> Assembly
+
+    subgraph Assembly["Stage 3: Output Assembly"]
+        Collect["Collect 518 Results"]
+        Sort["Sort by case_id"]
+        Serialize["Serialize CSV"]
+        Validate["Validate Output"]
+        Write["Write output.csv"]
+
+        Collect --> Sort --> Serialize --> Validate --> Write
+    end
+
+    Write --> Done(["Done: output.csv"])
+
+    classDef deterministic fill:#e8f5e9,stroke:#2e7d32
+    classDef ai fill:#fce4ec,stroke:#c62828
+    classDef hybrid fill:#fff9c4,stroke:#f57f17
+
+    class LoadCSV,BuildIdentity,ParseEvidence,BuildIndex,ResolveID,ApplyPolicy,DetectViolations,OrderSteps,Collect,Sort,Serialize,Validate,Write deterministic
+    class ClassifyIntent,ExtractMultimodal ai
+    class GatherEvidence,ReconstructState hybrid

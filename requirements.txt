@@ -1,0 +1,11 @@
+# Shomei Deletion Audit Engine — Runtime & Dashboard Dependencies
+
+# Core Engine Dependencies (Pure Python Standard Library + pypdf)
+pypdf>=5.1.0
+
+# Interactive Dashboard & Web Interface
+streamlit>=1.38.0
+pandas>=2.2.0
+
+# Optional Testing & Code Quality
+# pytest>=8.3.0
