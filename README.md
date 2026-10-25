@@ -186,6 +186,8 @@ python3 server.py --port 3000
 ```
 
 Open your browser to:
+### 🚀 [Live Demo → shomei-rf3v.onrender.com](https://shomei-rf3v.onrender.com)
+> ⏳ Hosted on Render's free tier. If the site has been idle, the first load may take about 50 seconds to wake up.
 - **Landing Page:** [`http://localhost:3000/`](http://localhost:3000/)
 - **Interactive Audit Console:** [`http://localhost:3000/dashboard`](http://localhost:3000/dashboard)
 
