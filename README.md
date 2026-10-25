@@ -44,7 +44,7 @@ In modern distributed microservice architectures, when a customer submits a form
 
 ---
 
-## 💡 The Solution: Shomei (証明)
+## 💡 The Solution: Shomei 
 
 **Shomei (Japanese: 証明, "Verification / Proof")** is an autonomous, deterministic deletion audit engine that establishes the true state of personal data across distributed enterprise systems at an exact point in time (`audit_at`), enforcing statutory GDPR/CCPA deletion policies and synthesizing safe, dependency-ordered 3-phase remediation plans.
 
