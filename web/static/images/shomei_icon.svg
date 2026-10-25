@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90" width="90" height="90" fill="none">
+  <!-- Green Rounded Square -->
+  <rect x="5" y="5" width="80" height="80" rx="20" fill="#15803D" />
+  <rect x="5" y="5" width="80" height="80" rx="20" fill="url(#green-gradient)" />
+  
+  <!-- White Ghost Silhouette -->
+  <path d="M 45 22 
+           C 32 22 25 31 25 44 
+           C 25 50 23 54 21 57 
+           C 19 60 21 63 25 62 
+           C 28 61 31 59 34 59 
+           C 37 59 37 68 41 68 
+           C 44 68 45 61 47 61 
+           C 49 61 50 68 53 68 
+           C 57 68 57 59 60 59 
+           C 63 59 66 61 69 62 
+           C 73 63 75 60 73 57 
+           C 71 54 69 50 69 44 
+           C 69 31 62 22 45 22 Z" 
+        fill="#FFFFFF" />
+        
+  <!-- Ghost Eyes -->
+  <circle cx="39" cy="38" r="2.8" fill="#15803D" />
+  <circle cx="51" cy="38" r="2.8" fill="#15803D" />
+  
+  <!-- Green Verification Checkmark Badge -->
+  <circle cx="65" cy="65" r="14" fill="#FFFFFF" />
+  <circle cx="65" cy="65" r="11" fill="#16A34A" />
+  <path d="M 60 65 L 63.5 68.5 L 70.5 61.5" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+
+  <defs>
+    <linearGradient id="green-gradient" x1="5" y1="5" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22C55E" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#15803D" stop-opacity="0.8" />
+    </linearGradient>
+  </defs>
+</svg>

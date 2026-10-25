@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shomei</title>
+  <meta name="description" content="Deleted should mean gone. Autonomous deletion verification and ghost data prevention across distributed platforms under GDPR and CCPA." />
+  <link rel="icon" type="image/png" href="/static/images/shomei_icon.png" />
+  <link rel="apple-touch-icon" href="/static/images/shomei_icon.png" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('shomei_theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved ? saved : (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <!-- Ambient Fluid Cursor-Reactive Particles Canvas -->
+  <canvas id="canvas-particles"></canvas>
+
+  <!-- Sticky Minimalist Header -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <div class="logo-group">
+        <a href="/" class="site-logo-link" id="nav-brand-logo">
+          <img src="/static/images/shomei_logo.png" alt="Shomei — CLEAN. VERIFIED. GONE." class="site-logo-img" />
+        </a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#systems" class="nav-link">System Topology</a></li>
+        <li><a href="#problem" class="nav-link">Ghost Data</a></li>
+        <li><a href="#discovery" class="nav-link">Discovery</a></li>
+        <li><a href="#investigation" class="nav-link">Investigation</a></li>
+        <li><a href="#remediation" class="nav-link">Remediation</a></li>
+        <li><a href="#verification" class="nav-link">Proof</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button type="button" class="theme-toggle-btn" id="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
+          <svg class="theme-icon theme-icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="theme-icon theme-icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+        <a href="/dashboard" class="btn btn-primary" id="btn-nav-dashboard">Explore the Demo →</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+      <div class="container">
+        <div class="hero-tagline">CLEAN. VERIFIED. GONE.</div>
+        <h1 class="hero-title">
+          Deleted should mean <em>gone</em>.
+        </h1>
+        <p class="hero-subtitle">
+          In distributed commerce platforms, an automated deletion workflow frequently claims <strong>Complete</strong> while customer data secretly lingers in read-replicas, search indexes, cold backups, and sync connectors. Shomei provides deterministic mathematical proof of true deletion state.
+        </p>
+        <div class="hero-ctas">
+          <a href="/dashboard" class="btn btn-primary btn-lg" id="btn-hero-launch">Explore the Demo →</a>
+          <a href="#systems" class="btn btn-secondary" id="btn-hero-explore">See How It Works ↓</a>
+        </div>
+
+        <!-- Product Visualization: Connected-System Interactive Topology Graph -->
+        <div class="system-graph-section" id="systems">
+          <div class="system-graph-header">
+            <div><strong>SHOMEI DISTRIBUTED SYSTEM TOPOLOGY</strong> · <span id="topology-store-count">7</span> CONNECTED STORES</div>
+            <div class="topology-controls" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+              <button type="button" id="btn-trace-play" class="btn btn-sm btn-primary" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;">
+                ▶ Run Guided Trace
+              </button>
+              <div class="trace-steps-group" style="display: inline-flex; border: 1px solid var(--border-medium); border-radius: 6px; overflow: hidden; background: var(--bg-card);">
+                <button type="button" class="trace-phase-btn active" data-phase="1" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border: none; background: transparent; cursor: pointer; font-family: var(--font-mono);">1. Discovery</button>
+                <button type="button" class="trace-phase-btn" data-phase="2" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border: none; border-left: 1px solid var(--border-subtle); background: transparent; cursor: pointer; font-family: var(--font-mono);">2. Investigation</button>
+                <button type="button" class="trace-phase-btn" data-phase="3" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border: none; border-left: 1px solid var(--border-subtle); background: transparent; cursor: pointer; font-family: var(--font-mono);">3. Remediation</button>
+                <button type="button" class="trace-phase-btn" data-phase="4" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border: none; border-left: 1px solid var(--border-subtle); background: transparent; cursor: pointer; font-family: var(--font-mono);">4. Verification</button>
+              </div>
+              <span class="badge-pill" style="font-size: 0.72rem;"><span class="status-dot"></span> LIVE INTERACTIVE</span>
+            </div>
+          </div>
+
+          <!-- Guided Stage Banner -->
+          <div id="trace-stage-banner" class="trace-stage-banner" style="padding: 0.6rem 1.2rem; background: var(--bg-warm-tint); border-bottom: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div id="trace-stage-text">
+              <strong style="color: var(--text-primary); font-family: var(--font-mono);">GUIDED TRACE:</strong> Move cursor to inspect nodes or press Play to watch a deletion request flow across systems.
+            </div>
+            <span id="trace-packet-indicator" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--green-primary);">● READY</span>
+          </div>
+
+          <!-- Docked Two-Column System Topology Workspace -->
+          <div class="system-topology-workspace">
+            <!-- Left Area: Interactive Graph Canvas Area -->
+            <div class="topology-canvas-column">
+              <div class="system-graph-canvas-wrap">
+                <canvas id="system-graph-canvas"></canvas>
+              </div>
+            </div>
+
+            <!-- Right Area: Dedicated Docked Node Details Inspector -->
+            <div class="topology-inspector-column">
+              <div id="system-inspector-card" class="docked-inspector-card">
+                <!-- Empty State before node is selected -->
+                <div id="inspector-empty-state" class="inspector-empty-state" style="display: none;">
+                  <div class="empty-state-icon">🔍</div>
+                  <h4 class="empty-state-title">Select a Store</h4>
+                  <p class="empty-state-text">
+                    Click any store node on the canvas or choose a filter below to inspect data remaining, compliance risk, and statutory remediation rules.
+                  </p>
+                  <div class="empty-state-pill">
+                    <span id="inspector-store-count-badge">7</span> Connected Stores
+                  </div>
+                </div>
+
+                <!-- Populated Details State -->
+                <div id="inspector-details-state" class="inspector-details-state">
+                  <div class="inspector-meta">
+                    <span id="inspector-type" class="inspector-type">Multi-Region Read Replica</span>
+                    <span id="inspector-status" class="status-pill-alert">REPLICATION DRIFT</span>
+                  </div>
+                  <h3 id="inspector-title" class="inspector-title">Database Replicas</h3>
+                  
+                  <div style="margin-top: 0.5rem;">
+                    <div style="font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase;">Data That May Remain:</div>
+                    <div id="inspector-finding" class="inspector-finding" style="margin-top: 0.25rem; font-size: 0.82rem; line-height: 1.45;">
+                      Asynchronous replication lag of 340s caused deletion transaction to miss failover snapshot.
+                    </div>
+                  </div>
+
+                  <div style="margin-top: 0.5rem;">
+                    <div style="font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase;">Relation to Deletion Request:</div>
+                    <div id="inspector-relation" style="font-size: 0.82rem; line-height: 1.45; color: var(--text-secondary); margin-top: 0.25rem;">
+                      Stale read queries continue to serve deleted customer PII to active regional services.
+                    </div>
+                  </div>
+
+                  <div id="inspector-action" class="inspector-action" style="margin-top: 0.75rem; font-size: 0.8rem;">
+                    Rule 2: Direct tombstone sync required across all read-replicas.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Accessible Keyboard / Mobile Navigation Filter Bar for All 7 Nodes -->
+          <div class="system-node-buttons" id="topology-filter-bar">
+            <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); align-self: center; margin-right: 0.5rem;">FILTER / INSPECT:</span>
+            <button type="button" class="system-node-btn active" data-node-id="all">All Stores (7)</button>
+            <button type="button" class="system-node-btn" data-node-id="primary_db">Primary Database</button>
+            <button type="button" class="system-node-btn" data-node-id="replicas">Database Replicas</button>
+            <button type="button" class="system-node-btn" data-node-id="cache">Cache</button>
+            <button type="button" class="system-node-btn" data-node-id="search_index">Search Index</button>
+            <button type="button" class="system-node-btn" data-node-id="support_systems">Support Systems</button>
+            <button type="button" class="system-node-btn" data-node-id="logs">Logs</button>
+            <button type="button" class="system-node-btn" data-node-id="exports_backups">Exports & Backups</button>
+          </div>
+        </div>
+
+        <!-- Claim vs Reality Inspector Card -->
+        <div class="hero-card" style="margin-top: 2rem;">
+          <div class="card-topbar">
+            <div class="window-dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <div>SHOMEI CORRELATION INSPECTOR v1.0</div>
+            <div><span class="badge-pill"><span class="status-dot"></span> LIVE AUDIT</span></div>
+          </div>
+          <div class="card-body">
+            <div class="comparison-grid">
+              <!-- Left: The Claim -->
+              <div class="comparison-col danger">
+                <div class="col-header">
+                  <span class="col-title">What The Workflow Claims</span>
+                  <span class="col-badge badge-red">UNVERIFIED CLAIM</span>
+                </div>
+                <div class="log-snippet">
+                  <div>[14:22:01] DeletionWorker initiated for user_05</div>
+                  <div>[14:22:04] DELETE FROM accounts WHERE id = 'acc_05'</div>
+                  <div>[14:22:05] <strong class="del-strike">Workflow Status: COMPLETE</strong></div>
+                  <div class="leak-warning" style="margin-top: 1rem;">
+                    ⚠️ CAUTION: Inspection reveals ghost records persist in 3 un-synchronized systems!
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: What Shomei Detects -->
+              <div class="comparison-col success">
+                <div class="col-header">
+                  <span class="col-title">What Shomei Establishes</span>
+                  <span class="col-badge badge-green">DETERMINISTIC TRUTH</span>
+                </div>
+                <div class="log-snippet">
+                  <div class="audit-verified">✕ Read Replica ap-south-1: User profile PRESENT (Lag)</div>
+                  <div class="audit-verified">✕ Integration Connector: Sync active (Recreation risk)</div>
+                  <div class="audit-verified">✕ Cold Backup archive: Restore unblocked</div>
+                  <div style="margin-top: 0.8rem; font-weight: 600; color: #991B1B;">
+                    VERDICT: INCOMPLETE ➔ Ordered remediation plan synthesized.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Story Step Indicators -->
+    <div class="container">
+      <div class="story-step-bar">
+        <a href="#problem" class="story-step-item active">
+          <span class="story-step-num">01</span>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem;">PROBLEM</span>
+          <span class="story-step-line"></span>
+        </a>
+        <a href="#discovery" class="story-step-item">
+          <span class="story-step-num">02</span>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem;">DISCOVERY</span>
+          <span class="story-step-line"></span>
+        </a>
+        <a href="#investigation" class="story-step-item">
+          <span class="story-step-num">03</span>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem;">INVESTIGATION</span>
+          <span class="story-step-line"></span>
+        </a>
+        <a href="#remediation" class="story-step-item">
+          <span class="story-step-num">04</span>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem;">REMEDIATION</span>
+          <span class="story-step-line"></span>
+        </a>
+        <a href="#verification" class="story-step-item">
+          <span class="story-step-num">05</span>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem;">PROOF</span>
+          <span class="story-step-line"></span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Section 1: The Problem -->
+    <section class="section section-alt" id="problem">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Step 01 · Distributed Failure Modes</div>
+          <h2 class="section-title">The Illusion of Deletion</h2>
+          <p class="section-desc">
+            When microservices delete records asynchronously, data hides in plain sight across secondary systems.
+          </p>
+        </div>
+
+        <div class="ghost-grid">
+          <div class="ghost-card">
+            <span class="ghost-icon">🔄</span>
+            <h3 class="ghost-title">Replication Drift</h3>
+            <p class="ghost-text">
+              Primary databases accept deletion queries, but regional read-replicas or failover instances fail to sync before snapshots are taken.
+            </p>
+            <span class="ghost-tag">SQL FAILOVER LAG</span>
+          </div>
+
+          <div class="ghost-card">
+            <span class="ghost-icon">⚡</span>
+            <h3 class="ghost-title">Sync Recreation</h3>
+            <p class="ghost-text">
+              Active ETL pipelines and CRM integration connectors periodically fetch from third parties, resurrecting deleted accounts.
+            </p>
+            <span class="ghost-tag">DATA FLOW COLLISION</span>
+          </div>
+
+          <div class="ghost-card">
+            <span class="ghost-icon">🪦</span>
+            <h3 class="ghost-title">Unredacted Tombstones</h3>
+            <p class="ghost-text">
+              Account tombstones are kept for financial integrity, but direct PII (email, phone, name) is accidentally preserved instead of purged.
+            </p>
+            <span class="ghost-tag">RULE 9 VIOLATION</span>
+          </div>
+
+          <div class="ghost-card">
+            <span class="ghost-icon">🧊</span>
+            <h3 class="ghost-title">Restoration Risks</h3>
+            <p class="ghost-text">
+              Disaster recovery backups contain stale customer archives. Without automated restore blocking, routine maintenance restores ghost records.
+            </p>
+            <span class="ghost-tag">RULE 14 BLOCK_RESTORE</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Discovery & Intent -->
+    <section class="section" id="discovery">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Step 02 · Multilingual Intent Classification</div>
+          <h2 class="section-title">Discovery Without Hallucination</h2>
+          <p class="section-desc">
+            Deterministic intent routing across 6 human languages. Isolates data access inquiries and legal holds with 100% precision.
+          </p>
+        </div>
+
+        <div class="pipeline-list">
+          <div class="pipeline-item">
+            <div class="pipeline-number">01</div>
+            <div class="pipeline-content">
+              <h3>Zero-Token Regex & Keyword Classification</h3>
+              <p>
+                Evaluates deletion requests in English, Spanish, French, Portuguese, Japanese, and Korean. Distinguishes genuine erasure requests from Subject Access Requests (SAR) or billing inquiries.
+              </p>
+              <div class="pipeline-chips">
+                <span class="pipeline-chip">6 Languages</span>
+                <span class="pipeline-chip">Deterministic Matcher</span>
+                <span class="pipeline-chip">Zero LLM Latency</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-item">
+            <div class="pipeline-number">02</div>
+            <div class="pipeline-content">
+              <h3>Historical Identity Graph Resolution</h3>
+              <p>
+                Recovers all temporal aliases, previous email addresses, old phone numbers, and pseudonymized hashes to ensure secondary references cannot escape detection.
+              </p>
+              <div class="pipeline-chips">
+                <span class="pipeline-chip">Temporal Audit Logs</span>
+                <span class="pipeline-chip">Identifier Unification</span>
+                <span class="pipeline-chip">100% Request Resolution</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Investigation -->
+    <section class="section section-alt" id="investigation">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Step 03 · Multi-System Evidence Correlation</div>
+          <h2 class="section-title">Deep Store Investigation</h2>
+          <p class="section-desc">
+            Shomei traverses 24 relational database snapshots and 10 platform stores to uncover hidden traces.
+          </p>
+        </div>
+
+        <div class="pipeline-list">
+          <div class="pipeline-item">
+            <div class="pipeline-number">03</div>
+            <div class="pipeline-content">
+              <h3>Multi-Store Cross Correlation</h3>
+              <p>
+                Scans relational databases, failover replicas, search indexes, event streams, support ticket threads, customer export archives, and object storage buckets.
+              </p>
+              <div class="pipeline-chips">
+                <span class="pipeline-chip">In-Memory SQLite</span>
+                <span class="pipeline-chip">Inverted Token Trie</span>
+                <span class="pipeline-chip">24 SQL Snapshots</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-item">
+            <div class="pipeline-number">04</div>
+            <div class="pipeline-content">
+              <h3>15-Rule Statutory Policy Engine</h3>
+              <p>
+                Codifies GDPR Art. 17 and CCPA statutory requirements into mathematical decision rules, balancing consumer erasure rights against legitimate retention obligations.
+              </p>
+              <div class="pipeline-chips">
+                <span class="pipeline-chip">15 Statutory Rules</span>
+                <span class="pipeline-chip">Tombstone Validation</span>
+                <span class="pipeline-chip">Legal Hold Priority</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Remediation -->
+    <section class="section" id="remediation">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Step 04 · Canonical Remediation Planning</div>
+          <h2 class="section-title">Ordered 3-Phase Synthesis</h2>
+          <p class="section-desc">
+            When deletion is incomplete, Shomei generates an exact canonical remediation sequence: findings first, corrective operations second, verification checks third.
+          </p>
+        </div>
+
+        <div class="pipeline-list">
+          <div class="pipeline-item">
+            <div class="pipeline-number">05</div>
+            <div class="pipeline-content">
+              <h3>Deterministic Phase Sequencing</h3>
+              <p>
+                Enforces strict phase hierarchy (<code>FINDING</code> ➔ <code>REMEDIATION</code> ➔ <code>VERIFICATION</code>). Deactivates data flows before purging storage to eliminate race conditions and recreation risks.
+              </p>
+              <div class="pipeline-chips">
+                <span class="pipeline-chip">Canonical Phase Order</span>
+                <span class="pipeline-chip">Evidence Provenance</span>
+                <span class="pipeline-chip">Zero Race Hazards</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Verification & Proof -->
+    <section class="section section-alt" id="verification">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Step 05 · Evidence-Backed Verification</div>
+          <h2 class="section-title">Mathematical Proof of Erasure</h2>
+          <p class="section-desc">
+            Shomei never trusts self-reported claims. Compliance must be mathematically proven.
+          </p>
+        </div>
+
+        <div class="metrics-banner" id="metrics">
+          <h3 class="metrics-title">Public Benchmark Evaluation Results</h3>
+          <div class="metrics-grid">
+            <div>
+              <div class="metric-num">100%</div>
+              <div class="metric-label">Status Accuracy (32/32)</div>
+            </div>
+            <div>
+              <div class="metric-num">100%</div>
+              <div class="metric-label">Exact Step-Match (193/193)</div>
+            </div>
+            <div>
+              <div class="metric-num">0</div>
+              <div class="metric-label">Temporal Leaks (518 Cases)</div>
+            </div>
+            <div>
+              <div class="metric-num">1.5ms</div>
+              <div class="metric-label">Average Audit Latency</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Explore Shomei CTA -->
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-box">
+          <h2 class="cta-title">Explore Shomei</h2>
+          <p class="cta-desc">
+            Step through live deletion audits, inspect resolved identity graphs, explore multi-system evidence, and review ordered remediation plans across distributed systems.
+          </p>
+          <a href="/dashboard" class="btn btn-primary btn-lg" id="btn-cta-bottom">Explore the Demo →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Fixed Bottom Hotkeys Bar (Insomnia Reference Style) -->
+  <footer class="hotkey-bar">
+    <div class="hotkey-items">
+      <a href="#hero" class="hotkey-item"><span class="hotkey-key">H</span> hero</a>
+      <a href="#systems" class="hotkey-item"><span class="hotkey-key">S</span> systems</a>
+      <a href="#problem" class="hotkey-item"><span class="hotkey-key">P</span> problem</a>
+      <a href="#discovery" class="hotkey-item"><span class="hotkey-key">D</span> discovery</a>
+      <a href="#investigation" class="hotkey-item"><span class="hotkey-key">I</span> investigation</a>
+      <a href="#remediation" class="hotkey-item"><span class="hotkey-key">R</span> remediation</a>
+      <a href="#verification" class="hotkey-item"><span class="hotkey-key">V</span> proof</a>
+      <a href="/dashboard" class="hotkey-item"><span class="hotkey-key">C</span> console</a>
+    </div>
+    <div class="hotkey-status">
+      <span>SHOMEI AUDIT ENGINE · CLEAN. VERIFIED. GONE.</span>
+    </div>
+  </footer>
+
+  <script src="/static/js/theme.js"></script>
+  <script src="/static/js/particles.js"></script>
+  <script src="/static/js/system_graph.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

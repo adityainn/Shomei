@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shomei</title>
+  <meta name="description" content="Live interactive deletion audit console. Step-by-step workflow: inspect identity graphs, multi-system evidence, ordered remediation sequences, and statutory verification." />
+  <link rel="icon" type="image/png" href="/static/images/shomei_icon.png" />
+  <link rel="apple-touch-icon" href="/static/images/shomei_icon.png" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('shomei_theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved ? saved : (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+</head>
+<body style="background: var(--bg-warm); padding-bottom: 5rem;">
+  <!-- Ambient Fluid Particles -->
+  <canvas id="canvas-particles"></canvas>
+
+  <!-- Sticky Minimalist Header -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <div class="logo-group">
+        <a href="/" class="site-logo-link" id="dash-logo-link">
+          <img src="/static/images/shomei_logo.png" alt="Shomei" class="site-logo-img" />
+        </a>
+      </div>
+      <div class="nav-actions">
+        <button type="button" class="theme-toggle-btn" id="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
+          <svg class="theme-icon theme-icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="theme-icon theme-icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+        <span id="dataset-status-badge"></span>
+        <a href="/" class="btn btn-secondary" id="btn-back-home">← Back to Product Story</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container dashboard-layout">
+    <!-- Topbar Banner -->
+    <div class="dash-topbar">
+      <div>
+        <h1 class="dash-title" style="font-family: var(--font-serif); font-size: 2.2rem; font-weight: 500;">
+          Interactive Deletion Audit Console
+        </h1>
+        <p class="dash-subtitle" style="font-size: 0.95rem; color: var(--text-secondary);">
+          Guided sample workflow: Request Received → Identity Resolution → System Discovery → Evidence Collection → Findings → Remediation Plan → Verification → Final Status.
+        </p>
+      </div>
+    </div>
+
+    <!-- Mandatory Synthetic Demonstration Disclosure Banner -->
+    <div class="disclosure-banner" role="alert">
+      <span style="font-size: 1.1rem;">⚠️</span>
+      <div>
+        <strong>DEMONSTRATION DISCLOSURE:</strong> Synthetic demonstration data — no real systems connected. Illustrative evidence IDs, timestamps, and system snapshots are provided to demonstrate Shomei's autonomous verification workflow and do not represent proof of actual production deletion.
+      </div>
+    </div>
+
+    <!-- Guided Stepper Navigation Bar (8 Standard Phases) -->
+    <div class="guided-stepper-bar">
+      <div class="stepper-nav">
+        <button type="button" id="btn-step-prev" class="stepper-btn" disabled>◀ Prev</button>
+        <button type="button" id="btn-step-start" class="stepper-btn">▶ Run Audit</button>
+        <button type="button" id="btn-step-next" class="stepper-btn" disabled>Next ▶</button>
+        <button type="button" id="btn-step-reset" class="stepper-btn">↺ Reset Demo</button>
+      </div>
+
+      <div class="stepper-indicators" id="stepper-indicators-track">
+        <div class="step-indicator active" data-step="1">
+          <span class="step-num">01</span> <span class="step-name">Intake</span>
+        </div>
+        <div class="step-indicator" data-step="2">
+          <span class="step-num">02</span> <span class="step-name">Identity</span>
+        </div>
+        <div class="step-indicator" data-step="3">
+          <span class="step-num">03</span> <span class="step-name">Systems</span>
+        </div>
+        <div class="step-indicator" data-step="4">
+          <span class="step-num">04</span> <span class="step-name">Evidence</span>
+        </div>
+        <div class="step-indicator" data-step="5">
+          <span class="step-num">05</span> <span class="step-name">Findings</span>
+        </div>
+        <div class="step-indicator" data-step="6">
+          <span class="step-num">06</span> <span class="step-name">Remediation</span>
+        </div>
+        <div class="step-indicator" data-step="7">
+          <span class="step-num">07</span> <span class="step-name">Verification</span>
+        </div>
+        <div class="step-indicator" data-step="8">
+          <span class="step-num">08</span> <span class="step-name">Final Report</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="dash-grid">
+      <!-- Left Column: Case Selection, Filters & Search -->
+      <div class="panel left-input-panel">
+        <h2 class="panel-title">
+          <span>Request Parameters</span>
+          <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">EDITABLE INPUTS</span>
+        </h2>
+
+        <!-- Search Input -->
+        <div style="margin-bottom: 0.75rem;">
+          <input type="text" id="case-search-input" class="search-input" style="width: 100%; box-sizing: border-box;" placeholder="Search catalog scenarios..." />
+        </div>
+
+        <!-- Filter Dropdowns: Category & Outcome -->
+        <div class="search-filter-box" style="margin-bottom: 1rem;">
+          <select id="case-filter-select" class="filter-select" style="flex: 1; min-width: 0;">
+            <option value="all">All Catalogs</option>
+            <option value="synthetic" selected>Synthetic Demos</option>
+            <option value="benchmark">Benchmark Cases</option>
+          </select>
+          <select id="case-outcome-select" class="filter-select" style="flex: 1; min-width: 0;">
+            <option value="all">All Outcomes</option>
+            <option value="COMPLETE">COMPLETE</option>
+            <option value="INCOMPLETE">INCOMPLETE</option>
+            <option value="NOT_APPLICABLE">NOT_APPLICABLE</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="case-select">Scenario Preset</label>
+          <select id="case-select" class="form-select">
+            <option value="">Loading cases catalog...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-email">Subject Email Address</label>
+          <input type="email" id="input-email" class="form-input" placeholder="e.g. sarah.connor@example.com" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-requested-at">Request Timestamp (requested_at)</label>
+          <input type="text" id="input-requested-at" class="form-input" placeholder="YYYY-MM-DDTHH:MM:SSZ" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-reported-status">Reported Workflow Claim</label>
+          <select id="input-reported-status" class="form-select">
+            <option value="COMPLETE">COMPLETE</option>
+            <option value="INCOMPLETE">INCOMPLETE</option>
+            <option value="PARTIALLY_COMPLETE">PARTIALLY_COMPLETE</option>
+            <option value="NOT_STARTED">NOT_STARTED</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-audit-at">Audit Cutoff (audit_at)</label>
+          <input type="text" id="input-audit-at" class="form-input" placeholder="YYYY-MM-DDTHH:MM:SSZ" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-request-text">Request Text (Multilingual)</label>
+          <textarea id="input-request-text" class="form-textarea" rows="3" placeholder="Enter consumer erasure request..."></textarea>
+        </div>
+
+        <button type="button" id="btn-run-audit" class="btn btn-primary" style="width: 100%;">
+          🚀 Run Autonomous Audit
+        </button>
+
+        <div id="input-audit-status" class="input-status-note">
+          Ready to audit. Edit fields above or click "Run Autonomous Audit".
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive 8-Phase Step Panels -->
+      <div class="right-workspace-column">
+        <!-- Verdict Banner -->
+        <div id="verdict-container" class="verdict-banner ready" style="margin-bottom: 1.5rem;">
+          <div>
+            <div class="verdict-title">Status: READY_TO_AUDIT</div>
+            <div class="verdict-desc">Configure or select request parameters on the left. Click "Run Autonomous Audit" to execute the statutory verification sequence.</div>
+          </div>
+        </div>
+
+        <!-- Metric Stat Pills -->
+        <div class="stat-pills" style="margin-bottom: 1.5rem;">
+          <div class="stat-pill">
+            <div class="stat-val" id="stat-user-id">—</div>
+            <div class="stat-lbl">Resolved Subject</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-val" id="stat-idents">—</div>
+            <div class="stat-lbl">Known Identifiers</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-val" id="stat-steps">—</div>
+            <div class="stat-lbl">Remediation Steps</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-val" id="stat-leaks">—</div>
+            <div class="stat-lbl">Residual Findings</div>
+          </div>
+        </div>
+
+        <!-- Live Audit Processing Activity Card -->
+        <div id="audit-progress-card" class="audit-progress-card" style="display: none; margin-bottom: 1.5rem;">
+          <div class="audit-progress-header">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span class="processing-spinner" id="processing-spinner"></span>
+              <strong id="progress-stage-title" style="font-size: 0.88rem; color: var(--text-primary);">Stage 01 · Intake Validation</strong>
+            </div>
+            <span id="progress-elapsed-badge" class="progress-time-badge">0ms elapsed</span>
+          </div>
+          <div class="progress-bar-track">
+            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 12%;"></div>
+          </div>
+          <div id="progress-status-desc" class="progress-status-desc">
+            Validating statutory deletion request intake and recording timestamps...
+          </div>
+        </div>
+
+        <!-- Console Tabs Header (8 Stages) -->
+        <div class="console-tabs" id="console-tabs-strip">
+          <button type="button" class="console-tab active" data-tab="tab-1">01 · Intake</button>
+          <button type="button" class="console-tab" data-tab="tab-2">02 · Identity</button>
+          <button type="button" class="console-tab" data-tab="tab-3">03 · Systems</button>
+          <button type="button" class="console-tab" data-tab="tab-4">04 · Evidence</button>
+          <button type="button" class="console-tab" data-tab="tab-5">05 · Findings</button>
+          <button type="button" class="console-tab" data-tab="tab-6">06 · Remediation</button>
+          <button type="button" class="console-tab" data-tab="tab-7">07 · Verification</button>
+          <button type="button" class="console-tab" data-tab="tab-8">08 · Final Report & JSON</button>
+        </div>
+
+        <!-- Stage 1: Request Received -->
+        <div id="tab-1" class="tab-content active">
+          <div class="panel">
+            <h2 class="panel-title">
+              <span>Stage 01 · Deletion Request Intake</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">STATUTORY INTAKE</span>
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              The incoming consumer request is ingested, timestamps recorded, and regulatory jurisdiction classified under GDPR Art. 17 or CCPA § 1798.105.
+            </p>
+
+            <div style="background: var(--bg-warm); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.25rem;">
+              <div class="info-grid-2col">
+                <strong>Case Identifier:</strong>
+                <span id="intake-case-id" style="font-family: var(--font-mono); font-weight: 700;">—</span>
+
+                <strong>Requester Email:</strong>
+                <span id="intake-email" style="font-family: var(--font-mono);">—</span>
+
+                <strong>Intake Timestamp:</strong>
+                <span id="intake-timestamp" style="font-family: var(--font-mono);">—</span>
+
+                <strong>Statutory Basis:</strong>
+                <span style="color: var(--green-deep); font-weight: 600;">GDPR Article 17 ("Right to Erasure") / CCPA § 1798.105</span>
+
+                <strong>Reported Workflow Claim:</strong>
+                <span id="intake-reported-status" class="badge-pill" style="display: inline-block;">PENDING</span>
+
+                <strong>Intake Request Text:</strong>
+                <div id="intake-text-preview" style="background: var(--bg-card); border: 1px solid var(--border-subtle); padding: 0.75rem; border-radius: 4px; font-style: italic; word-break: break-word; color: var(--text-secondary);">
+                  —
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 2: Identity Resolution -->
+        <div id="tab-2" class="tab-content">
+          <div class="panel">
+            <h2 class="panel-title">
+              <span>Stage 02 · Identity Graph Resolution</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">TEMPORAL UNIFICATION</span>
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Shomei unifies historical audit logs to discover previous email addresses, past phone numbers, and pseudonymized hashes linked to this consumer.
+            </p>
+
+            <div style="background: var(--bg-warm); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.25rem;">
+              <div class="info-grid-2col">
+                <strong>Resolved Subject ID:</strong>
+                <span id="ident-user-id" style="font-family: var(--font-mono); font-weight: 700;">—</span>
+
+                <strong>Active & Historical Emails:</strong>
+                <span id="ident-emails" style="font-family: var(--font-mono);">—</span>
+
+                <strong>Linked Phone Numbers:</strong>
+                <span id="ident-phones" style="font-family: var(--font-mono);">—</span>
+
+                <strong>Intent Classification:</strong>
+                <span id="ident-intent" style="font-family: var(--font-mono); color: var(--green-deep); font-weight: 600;">PENDING EVALUATION</span>
+
+                <strong>Audit Trail Provenance:</strong>
+                <span id="ident-audit-trail" style="font-size: 0.82rem; color: var(--text-secondary);">Temporal audit log entries unified across registration, profile update, and session authentication events.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 3: System Discovery & Topology Map -->
+        <div id="tab-3" class="tab-content">
+          <div class="panel">
+            <h2 class="panel-title">
+              <span>Stage 03 · Distributed System Topology Map</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">8 CONNECTED PLATFORM STORES</span>
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Click any system node to inspect its architecture role, upstream/downstream data dependencies, relevant evidence citations, status, and required remediation actions.
+            </p>
+
+            <!-- 8 Connected Nodes Grid -->
+            <div id="discovery-stores-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.75rem;">
+              <!-- Populated by JS -->
+            </div>
+
+            <!-- Selected System Details Inspector Panel -->
+            <div id="system-details-panel" class="system-details-panel">
+              <!-- Populated by JS on node select -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 4: Evidence Collection -->
+        <div id="tab-4" class="tab-content">
+          <div class="panel">
+            <h2 class="panel-title">
+              <span>Stage 04 · Evidence Explorer & Provenance</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">CITATIONS & CRYPTOGRAPHIC ARTIFACTS</span>
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+              Inspect synthetic evidence citations, cryptographic hashes, and observed record states. Filter by system or verification status and select an artifact to view raw snapshot parameters.
+            </p>
+
+            <!-- Filters for Evidence Explorer -->
+            <div class="search-filter-box" style="margin-bottom: 1rem;">
+              <select id="evidence-filter-system" class="filter-select" style="flex: 1;">
+                <option value="all">All Systems (8)</option>
+                <option value="Primary Database">Primary Database</option>
+                <option value="Database Replicas">Database Replicas</option>
+                <option value="Cache">Cache</option>
+                <option value="Search Index">Search Index</option>
+                <option value="Application Logs">Application Logs</option>
+                <option value="Support Systems">Support Systems</option>
+                <option value="Data Exports">Data Exports</option>
+                <option value="Backups">Backups</option>
+              </select>
+              <select id="evidence-filter-status" class="filter-select" style="flex: 1;">
+                <option value="all">All Statuses</option>
+                <option value="VERIFIED_ABSENT">VERIFIED_ABSENT</option>
+                <option value="RESIDUAL_DETECTED">RESIDUAL_DETECTED</option>
+                <option value="PSEUDONYMIZED">PSEUDONYMIZED</option>
+                <option value="EXEMPT">EXEMPT</option>
+              </select>
+            </div>
+
+            <!-- Evidence Explorer Layout: List on Left, Inspector on Right -->
+            <div class="evidence-explorer-layout">
+              <div id="evidence-list-container">
+                <div id="evidence-grid">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+              <div id="evidence-inspector-card" class="evidence-inspector-card">
+                <!-- Populated by JS when evidence row clicked -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 5: Findings -->
+        <div id="tab-5" class="tab-content">
+          <div class="panel">
+            <h2 class="panel-title">
+              <span>Stage 05 · Audit Findings & Failure Modes</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">RESIDUAL RISK ANALYSIS</span>
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Detailed breakdown of residual ghost data detected across secondary replicas, caches, search indexes, or SaaS connectors.
+            </p>
+
+            <div id="findings-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 6: Remediation Plan -->
+        <div id="tab-6" class="tab-content">
+          <div class="panel">
+            <h2 class="panel-title">
+              <span>Stage 06 · Canonical Remediation Timeline</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">FINDING ➔ REMEDIATION ➔ VERIFICATION</span>
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              When deletion is incomplete, Shomei synthesizes an ordered sequence: report finding first, execute corrective purges second, verify absence third.
+            </p>
+
+            <div class="steps-table-wrapper">
+              <table class="steps-table">
+                <thead>
+                  <tr>
+                    <th>Step #</th>
+                    <th>Phase</th>
+                    <th>Target System</th>
+                    <th>Resource ID</th>
+                    <th>Operation</th>
+                    <th>Target State</th>
+                    <th>Cited Evidence</th>
+                  </tr>
+                </thead>
+                <tbody id="steps-tbody">
+                  <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                      Select a case to inspect ordered steps.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 7: Verification -->
+        <div id="tab-7" class="tab-content">
+          <div class="panel">
+            <h2 class="panel-title">
+              <span>Stage 07 · Statutory Verification Conditions</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">POLICY RULE EVALUATION</span>
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Mathematical verification against statutory policy rules codifying GDPR Art. 17 and CCPA deletion conditions.
+            </p>
+
+            <div id="verification-conditions-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 8: Final Status & Raw JSON -->
+        <div id="tab-8" class="tab-content">
+          <div class="panel">
+            <h2 class="panel-title">
+              <span>Stage 08 · Honest Final Audit Report & Raw JSON</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">STATUTORY AUDIT ATTESTATION</span>
+            </h2>
+
+            <!-- Report Export & Attestation Actions Bar -->
+            <div class="report-export-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding: 0.85rem 1rem; background: var(--bg-warm); border: 1px solid var(--border-medium); border-radius: var(--radius-sm); flex-wrap: wrap; gap: 0.75rem;">
+              <div>
+                <strong style="font-size: 0.88rem; color: var(--text-primary);">Audit Attestation Exports</strong>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Download completed audit result as formatted JSON or generate a print/PDF attestation report.</div>
+              </div>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="button" id="btn-download-json" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.78rem;">
+                  ⬇️ Download Audit JSON
+                </button>
+                <button type="button" id="btn-print-report" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.78rem;">
+                  🖨️ Print / Save as PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Honest Final Audit Report Card -->
+            <div id="honest-report-container" class="honest-report-card">
+              <!-- Populated by JS -->
+            </div>
+
+            <!-- Raw JSON Inspector Header & Controls -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; margin-top: 1.5rem;">
+              <div>
+                <span style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: var(--text-primary);">RAW JSON AUDIT INSPECTOR</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted); margin-left: 0.5rem;">(Updates dynamically with scenario & inspection state)</span>
+              </div>
+              <button type="button" id="btn-copy-json" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;">
+                📋 Copy JSON
+              </button>
+            </div>
+            <pre id="json-preview" style="background: #181816; color: #E5E4DE; padding: 1.25rem; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.78rem; overflow-x: auto; max-height: 420px;">{ /* JSON Output will appear here */ }</pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Dedicated Print/Save-as-PDF Attestation Report Container (Print Only) -->
+  <div id="printable-audit-report" aria-hidden="true"></div>
+
+  <script src="/static/js/theme.js"></script>
+  <script src="/static/js/particles.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

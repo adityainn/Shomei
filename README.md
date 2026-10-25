@@ -95,16 +95,27 @@ cd Shomei
 pip install -r requirements.txt
 ```
 
-### 2. Launch Interactive Streamlit Dashboard
+### 2. Launch Unified Web Application (Landing Page + Audit Console)
 
-Run the visual audit explorer:
+Run the full editorial web application powered by FastAPI:
+
+```bash
+python3 server.py --port 3000
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser:
+- **Landing Page (`/`)**: Minimalist scroll-led product story, animated 7-store connected system topology canvas, cursor-reactive fluid particle field.
+- **Audit Console (`/dashboard`)**: Live interactive deletion audit console with 8-stage guided workflow, real-time parameters, evidence explorer, raw JSON inspector, printable attestation reports, and Light/Dark theme switcher.
+
+### 3. Launch Alternative Streamlit Dashboard
+
+Run the standalone visual audit explorer:
 
 ```bash
 streamlit run app.py
 ```
-Open [http://localhost:8501](http://localhost:8501) in your browser to inspect live cases, view policy rules, and test multi-system discovery.
+Open [http://localhost:8501](http://localhost:8501) in your browser to inspect cases, view policy rules, and test multi-system discovery.
 
-### 3. CLI Audit Execution
+### 4. CLI Audit Execution
 
 Run the standalone CLI audit engine:
 
@@ -119,12 +130,12 @@ python3 code/main.py --dry-run
 python3 code/main.py --eval
 ```
 
-### 4. Run Unit Test Suite
+### 5. Run Automated Test Suite
 
-Execute the 14 unit test suites (72 test cases):
+Execute the 17 automated test suites (94 test cases):
 
 ```bash
-python3 -m unittest discover -s code/tests -v
+pytest code/tests/ -v
 ```
 
 ---
@@ -142,11 +153,26 @@ python3 -m unittest discover -s code/tests -v
 
 ```text
 Shomei/
+├── server.py                  # Unified FastAPI Web Server (Landing Page + Console)
 ├── app.py                     # Streamlit Interactive Web Application
-├── requirements.txt           # Lightweight runtime dependencies (pypdf, streamlit, pandas)
+├── requirements.txt           # Application dependencies (FastAPI, Streamlit, etc.)
 ├── .env.example               # Environment configuration template
 ├── .gitignore                 # Strict privacy ignore rules (protects datasets & credentials)
 ├── README.md                  # Project documentation & architecture overview
+├── web/                       # Full Web Application Frontend Assets
+│   ├── templates/             # Jinja2 / HTML5 Page Templates
+│   │   ├── index.html         # Editorial Landing Page
+│   │   └── dashboard.html     # Interactive Deletion Audit Console
+│   └── static/
+│       ├── css/
+│       │   └── style.css      # Design System Tokens & Light/Dark Theme Styles
+│       ├── js/
+│       │   ├── theme.js       # Centralized Theme Manager (Light/Dark Mode)
+│       │   ├── system_graph.js# 7-Store Connected Topology Canvas
+│       │   ├── dashboard.js   # Audit Workflow Controller & Report Exports
+│       │   ├── particles.js   # Fluid Cursor-Reactive Particle Field
+│       │   └── main.js        # Hotkeys & Navigation
+│       └── images/            # Brand Identity Marks & Logos (Light & Dark)
 ├── code/                      # Production Audit Engine
 │   ├── main.py                # CLI application entrypoint
 │   ├── classifier.py          # Multilingual intent parser
@@ -162,7 +188,7 @@ Shomei/
 │   ├── sql_engine.py          # In-memory relational database
 │   ├── steps.py               # 3-phase canonical sequence builder
 │   ├── evaluation/            # Public sample evaluator & reports
-│   └── tests/                 # 14 unit test suites (72 unit tests)
+│   └── tests/                 # 17 automated test suites (94 unit & integration tests)
 ├── docs/                      # Architectural specifications & guides
 │   ├── SYSTEM_ARCHITECTURE.md
 │   ├── DATA_FLOW.md

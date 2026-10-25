@@ -8,6 +8,8 @@ dataset/
 *.sql
 *.pdf
 *.png
+!web/static/images/*.png
+!web/static/images/*.svg
 *.log
 
 # --- Competition Deliverables & Agent Traces ---
