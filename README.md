@@ -24,6 +24,9 @@
 
 > [!TIP]
 > ### 🌐 Live Application Experience
+> ### 🚀 [Live Demo → shomei-rf3v.onrender.com](https://shomei-rf3v.onrender.com)
+
+> ⏳ Hosted on Render's free tier. If the site has been idle, the first load may take about 50 seconds to wake up.
 > - **Unified Web Application (FastAPI):** Run `python3 server.py --port 3000` to launch the full editorial landing page and live interactive audit console at [`http://localhost:3000`](http://localhost:3000).
 ---
 
