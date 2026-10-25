@@ -10,6 +10,7 @@ dataset/
 *.png
 !web/static/images/*.png
 !web/static/images/*.svg
+!docs/images/*.png
 *.log
 
 # --- Competition Deliverables & Agent Traces ---

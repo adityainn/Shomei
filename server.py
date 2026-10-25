@@ -842,8 +842,8 @@ async def audit_case(payload: AuditRequestPayload):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Shomei Local Web Demo Server")
-    parser.add_argument("--port", type=int, default=3000, help="Port to run web server on (default: 3000)")
-    parser.add_argument("--host", type=str, default="127.0.0.1", help="Host address (default: 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=int(os.getenv("SHOMEI_PORT", "3000")), help="Port to run web server on (default: 3000)")
+    parser.add_argument("--host", type=str, default=os.getenv("SHOMEI_HOST", "127.0.0.1"), help="Host address (default: 127.0.0.1)")
     args = parser.parse_args()
 
     print("=" * 60)
