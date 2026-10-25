@@ -202,3 +202,26 @@ def test_custom_user_edited_request_evaluation():
     assert data2["final_report"]["distinctions"]["deletion_independently_verified"] is False
     assert data2["final_report"]["audit_certificate"] is None
 
+
+def test_health_and_public_routes():
+    """Verify that deployment endpoints (/health, /, /dashboard) respond cleanly."""
+    # Health endpoint
+    h_res = client.get("/health")
+    assert h_res.status_code == 200
+    h_data = h_res.json()
+    assert h_data["status"] == "healthy"
+    assert h_data["service"] == "shomei"
+    assert "engine_mode" in h_data
+
+    # Root landing page
+    root_res = client.get("/")
+    assert root_res.status_code == 200
+    assert "text/html" in root_res.headers.get("content-type", "")
+    assert "Shomei" in root_res.text
+
+    # Dashboard page
+    dash_res = client.get("/dashboard")
+    assert dash_res.status_code == 200
+    assert "text/html" in dash_res.headers.get("content-type", "")
+    assert "Shomei" in dash_res.text
+

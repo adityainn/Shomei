@@ -687,6 +687,16 @@ def get_dashboard_page():
     return FileResponse(dash_file)
 
 
+@app.get("/health")
+def get_health():
+    """Lightweight health check endpoint for container platforms (Render, Kubernetes)."""
+    return {
+        "status": "healthy",
+        "service": "shomei",
+        "engine_mode": "live" if ENGINE_INITIALIZED else "synthetic_demo",
+    }
+
+
 @app.get("/api/cases")
 def list_cases():
     """List available audit cases (combining live benchmark cases and labeled demo cases)."""
@@ -746,110 +756,122 @@ async def audit_case(payload: AuditRequestPayload):
             detail="Consumer deletion request text cannot be empty."
         )
 
-    # 1. Synthetic demo scenarios
-    if payload.case_id in SYNTHETIC_CASES:
-        s_case = SYNTHETIC_CASES[payload.case_id]
-        
-        # Determine status: if user manually edited request text to indicate legal hold or SAR inquiry
-        text_lower = (payload.request_text or s_case.get("request_text", "")).lower()
-        if any(w in text_lower for w in ["anti-money", "aml", "fincen", "banking", "legal hold", "court", "subpoena"]):
-            case_status = "NOT_APPLICABLE"
-            steps = []
-        elif any(w in text_lower for w in ["access inquiry", "sar", "inspect my", "retention policy", "개인정보 처리방침"]):
-            case_status = "NOT_APPLICABLE"
-            steps = []
-        else:
-            case_status = s_case["status"]
-            steps = s_case.get("steps")
-
-        return build_case_audit_bundle(
-            case_id=payload.case_id,
-            email=payload.email or s_case["email"],
-            requested_at=payload.requested_at or s_case["requested_at"],
-            reported_status=payload.reported_status or s_case["reported_status"],
-            audit_at=payload.audit_at or s_case["audit_at"],
-            request_text=payload.request_text or s_case["request_text"],
-            status=case_status,
-            steps=steps,
-            user_id=s_case.get("user_id"),
-            is_synthetic=True,
-        )
-
-    # 2. Live audit engine evaluation if dataset is available
-    if ENGINE_INITIALIZED and ENGINE_CONTEXT:
-        req = DeletionRequest(
-            case_id=payload.case_id,
-            email=payload.email,
-            requested_at=payload.requested_at,
-            reported_status=payload.reported_status,
-            reported_at=payload.requested_at,
-            audit_at=payload.audit_at,
-            request_text=payload.request_text,
-        )
-
-        profile = ENGINE_CONTEXT["resolver"].resolve_request(req)
-        if profile is not None:
-            discovered = ENGINE_CONTEXT["discoverer"].discover_for_request(req, profile)
-            decision = ENGINE_CONTEXT["decision_engine"].evaluate(req, profile, discovered)
-            case_out = ENGINE_CONTEXT["step_builder"].build_case_output(decision)
-            status_val = case_out.deletion_status.value
-            steps_dicts = [s.to_dict() for s in case_out.steps]
+    try:
+        # 1. Synthetic demo scenarios
+        if payload.case_id in SYNTHETIC_CASES:
+            s_case = SYNTHETIC_CASES[payload.case_id]
+            
+            # Determine status: if user manually edited request text to indicate legal hold or SAR inquiry
+            text_lower = (payload.request_text or s_case.get("request_text", "")).lower()
+            if any(w in text_lower for w in ["anti-money", "aml", "fincen", "banking", "legal hold", "court", "subpoena"]):
+                case_status = "NOT_APPLICABLE"
+                steps = []
+            elif any(w in text_lower for w in ["access inquiry", "sar", "inspect my", "retention policy", "개인정보 처리방침"]):
+                case_status = "NOT_APPLICABLE"
+                steps = []
+            else:
+                case_status = s_case["status"]
+                steps = s_case.get("steps")
 
             return build_case_audit_bundle(
+                case_id=payload.case_id,
+                email=payload.email or s_case["email"],
+                requested_at=payload.requested_at or s_case["requested_at"],
+                reported_status=payload.reported_status or s_case["reported_status"],
+                audit_at=payload.audit_at or s_case["audit_at"],
+                request_text=payload.request_text or s_case["request_text"],
+                status=case_status,
+                steps=steps,
+                user_id=s_case.get("user_id"),
+                is_synthetic=True,
+            )
+
+        # 2. Live audit engine evaluation if dataset is available
+        if ENGINE_INITIALIZED and ENGINE_CONTEXT:
+            req = DeletionRequest(
                 case_id=payload.case_id,
                 email=payload.email,
                 requested_at=payload.requested_at,
                 reported_status=payload.reported_status,
+                reported_at=payload.requested_at,
                 audit_at=payload.audit_at,
                 request_text=payload.request_text,
-                status=status_val,
-                steps=steps_dicts,
-                user_id=profile.user_id,
-                is_synthetic=False,
             )
 
-    # 3. Benchmark verified fallback or custom input evaluation
-    text_lower = (payload.request_text or "").lower()
-    if any(w in text_lower for w in ["anti-money", "aml", "fincen", "banking", "legal hold", "court", "subpoena", "sar", "access inquiry"]):
-        status = "NOT_APPLICABLE"
-    elif payload.reported_status in ["INCOMPLETE", "PARTIALLY_COMPLETE"]:
-        status = "INCOMPLETE"
-    else:
-        status = BENCHMARK_STATUS_MAP.get(payload.case_id, "COMPLETE")
+            profile = ENGINE_CONTEXT["resolver"].resolve_request(req)
+            if profile is not None:
+                discovered = ENGINE_CONTEXT["discoverer"].discover_for_request(req, profile)
+                decision = ENGINE_CONTEXT["decision_engine"].evaluate(req, profile, discovered)
+                case_out = ENGINE_CONTEXT["step_builder"].build_case_output(decision)
+                status_val = case_out.deletion_status.value
+                steps_dicts = [s.to_dict() for s in case_out.steps]
 
-    custom_steps = []
-    if status == "INCOMPLETE":
-        custom_steps = [
-            {"step_no": 1, "phase": "FINDING", "system_id": "replicas", "resource_id": f"replica_{payload.case_id}", "operation": "REPORT_REMAINING_RECORD", "state": "PRESENT", "evidence_id": "EV-REPL-01"},
-            {"step_no": 2, "phase": "REMEDIATION", "system_id": "replicas", "resource_id": f"replica_{payload.case_id}", "operation": "FORCE_REPLICA_BINLOG_FLUSH", "state": "ABSENT", "evidence_id": ""},
-            {"step_no": 3, "phase": "VERIFICATION", "system_id": "replicas", "resource_id": f"replica_{payload.case_id}", "operation": "VERIFY_RECORD_ABSENT", "state": "ABSENT", "evidence_id": ""}
-        ]
+                return build_case_audit_bundle(
+                    case_id=payload.case_id,
+                    email=payload.email,
+                    requested_at=payload.requested_at,
+                    reported_status=payload.reported_status,
+                    audit_at=payload.audit_at,
+                    request_text=payload.request_text,
+                    status=status_val,
+                    steps=steps_dicts,
+                    user_id=profile.user_id,
+                    is_synthetic=False,
+                )
 
-    return build_case_audit_bundle(
-        case_id=payload.case_id,
-        email=payload.email,
-        requested_at=payload.requested_at,
-        reported_status=payload.reported_status,
-        audit_at=payload.audit_at,
-        request_text=payload.request_text,
-        status=status,
-        steps=custom_steps,
-        user_id=f"user_{payload.case_id.replace(' ', '_')}",
-        is_synthetic=True,
-    )
+        # 3. Benchmark verified fallback or custom input evaluation
+        text_lower = (payload.request_text or "").lower()
+        if any(w in text_lower for w in ["anti-money", "aml", "fincen", "banking", "legal hold", "court", "subpoena", "sar", "access inquiry"]):
+            status = "NOT_APPLICABLE"
+        elif payload.reported_status in ["INCOMPLETE", "PARTIALLY_COMPLETE"]:
+            status = "INCOMPLETE"
+        else:
+            status = BENCHMARK_STATUS_MAP.get(payload.case_id, "COMPLETE")
+
+        custom_steps = []
+        if status == "INCOMPLETE":
+            custom_steps = [
+                {"step_no": 1, "phase": "FINDING", "system_id": "replicas", "resource_id": f"replica_{payload.case_id}", "operation": "REPORT_REMAINING_RECORD", "state": "PRESENT", "evidence_id": "EV-REPL-01"},
+                {"step_no": 2, "phase": "REMEDIATION", "system_id": "replicas", "resource_id": f"replica_{payload.case_id}", "operation": "FORCE_REPLICA_BINLOG_FLUSH", "state": "ABSENT", "evidence_id": ""},
+                {"step_no": 3, "phase": "VERIFICATION", "system_id": "replicas", "resource_id": f"replica_{payload.case_id}", "operation": "VERIFY_RECORD_ABSENT", "state": "ABSENT", "evidence_id": ""}
+            ]
+
+        return build_case_audit_bundle(
+            case_id=payload.case_id,
+            email=payload.email,
+            requested_at=payload.requested_at,
+            reported_status=payload.reported_status,
+            audit_at=payload.audit_at,
+            request_text=payload.request_text,
+            status=status,
+            steps=custom_steps,
+            user_id=f"user_{payload.case_id.replace(' ', '_')}",
+            is_synthetic=True,
+        )
+    except HTTPException:
+        raise
+    except Exception as err:
+        print(f"Error processing audit for case {payload.case_id}: {err}", file=sys.stderr)
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while evaluating the deletion audit. Please verify input parameters."
+        )
 
 
 
 if __name__ == "__main__":
+    default_port = int(os.getenv("PORT", os.getenv("SHOMEI_PORT", "3000")))
+    default_host = os.getenv("HOST", os.getenv("SHOMEI_HOST", "0.0.0.0"))
     parser = argparse.ArgumentParser(description="Shomei Local Web Demo Server")
-    parser.add_argument("--port", type=int, default=int(os.getenv("SHOMEI_PORT", "3000")), help="Port to run web server on (default: 3000)")
-    parser.add_argument("--host", type=str, default=os.getenv("SHOMEI_HOST", "127.0.0.1"), help="Host address (default: 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=default_port, help=f"Port to run web server on (default: {default_port})")
+    parser.add_argument("--host", type=str, default=default_host, help=f"Host address (default: {default_host})")
     args = parser.parse_args()
 
     print("=" * 60)
-    print(f"Shomei (証明) Web Server starting on http://localhost:{args.port}")
-    print(f"  - Landing Page:  http://localhost:{args.port}/")
-    print(f"  - Audit Console: http://localhost:{args.port}/dashboard")
+    print(f"Shomei (証明) Web Server starting on http://{args.host}:{args.port}")
+    print(f"  - Landing Page:  http://{args.host}:{args.port}/")
+    print(f"  - Audit Console: http://{args.host}:{args.port}/dashboard")
+    print(f"  - Health Check:  http://{args.host}:{args.port}/health")
     print("=" * 60)
 
     uvicorn.run("server:app", host=args.host, port=args.port, reload=False, log_level="info")
