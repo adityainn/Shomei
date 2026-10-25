@@ -25,8 +25,6 @@
 > [!TIP]
 > ### 🌐 Live Application Experience
 > - **Unified Web Application (FastAPI):** Run `python3 server.py --port 3000` to launch the full editorial landing page and live interactive audit console at [`http://localhost:3000`](http://localhost:3000).
-> - **Alternative Standalone Explorer (Streamlit):** Run `streamlit run app.py` or deploy 1-click on [Streamlit Community Cloud](https://share.streamlit.io/) via `app.py`.
-
 ---
 
 ## 📌 The Problem: Ghost Data Still Exists
